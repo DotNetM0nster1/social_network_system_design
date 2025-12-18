@@ -163,7 +163,7 @@ components:
           example: "Error when try send request to the server"
 
 paths:
-  "users/{user_id}/{post_id}":
+  "/v1/posts/{post_id}":
     get:
       summary: "Get post by id"
       security: 
@@ -306,7 +306,7 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/ServerError"   
-  "users/{user_id}/post":
+  "/v1/posts":
     post:
       summary: "Create post"
       security: 
@@ -359,7 +359,7 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/ServerError" 
-  "users/{user_id}/page":
+  "/v1/users/{user_id}/page":
     get:
       summary: Get user page by user id
       security: 
@@ -419,26 +419,22 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/ServerError" 
-  "/file/{file_id}":
+  "/v1/files/{file_id}":
     get:
       summary: Get file by id
       security:
         - bearerAuth: []
-      parameters:
-        - name: id
-          in: query
-          description: File id
-          schema: 
-            type: string
-            format: guid
       responses:
         "200":
           description: Finded file result info
           content:
-            image/jpeg:
+            application/jpeg:
               schema:
-                type: string
-                format: binary
+                type: object
+                properties:
+                  uploadUrl:
+                    type: string
+                    examples: ["https://s3.amazonaws.com/post-photos/some-photo"]
         "401":
           description: Not authorized
           content:
@@ -463,7 +459,7 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/ServerError" 
-  "/file":
+  "/v1/files":
     post:
       summary: Add file
       security:
@@ -509,7 +505,7 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/ServerError" 
-  "users/{user_id}/subscribe":
+  "/v1/users/{user_id}/following":
     get:
       summary: Get users subscribe
       security: 
@@ -539,6 +535,30 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Subscribe"
+        "401":
+          description: Not authorized
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/AuthorizationError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ForbiddenError"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ServerError"
     post:
       summary: Add subscribe
       security:
@@ -561,3 +581,78 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Subscribe"
+"/v1/posts/{user_id}/likes":
+    post:
+      summary: Like on post
+      security: 
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema: 
+            type: string
+            format: guid
+      responses: 
+        "204":
+         description: The post has been liked
+        "401":
+          description: Not authorized
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/AuthorizationError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ForbiddenError"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ServerError" 
+    delete:
+      summary: Remove like on post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema: 
+            type: string
+            format: guid
+      responses: 
+        "204":
+          description: Success remove like
+        "401":
+          description: Not authorized
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/AuthorizationError"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ForbiddenError"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ServerError" 
