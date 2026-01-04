@@ -131,7 +131,7 @@ TravelSocial - Проект, выполняемых в рамках прохож
             - (read) 578 * 50B ≈ 28KB
         - Подписка:
             - (create) 231 * 48B ≈ 11KB
-        Media-Data:
+        - Media-Data:
             - (create) 578 * (2MB * 3) ≈ 3GB
             - (read) 2 314 * (2MB * 3) ≈ 13GB
     - В сезонность:
