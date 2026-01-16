@@ -3,8 +3,8 @@ Database sheme:
 Table follows 
 {
   id uuid [primary key]
-  following_user_id uuid
-  followed_user_id uuid
+  following_user_id uuid [not null]
+  followed_user_id uuid [not null]
   followed_at timestamp
   unfollowed_at timestamp
 }
@@ -12,8 +12,8 @@ Table follows
 Table comments 
 {
   id uuid [primary key]
-  post_id uuid
-  attachment_id uuid
+  post_id uuid [not null]
+  attachment_id uuid [not null]
   text varchar
   status varchar
   created_at timestamp
@@ -37,11 +37,24 @@ Table users
   created_at timestamp
 }
 
+Table media
+{
+  id uuid [primary key]
+  post_id uuid [not null]
+}
+
+Table reactions
+{
+  id uuid [primary key]
+  post_id uuid [not null]
+  created_at timestamp [not null]
+}
+
 Table posts 
 {
   id uuid [primary key]
   text varchar
-  account_id uuid
+  account_id uuid [not null]
   status varchar
   created_at timestamp
   changed_at timestamp
@@ -54,6 +67,8 @@ Ref: "posts"."id" < "comments"."id"
 Ref: "accounts"."id" < "users"."id"
 Ref: "comments"."id" < "accounts"."id"
 Ref: "posts"."account_id" < "accounts"."id"
+Ref: "media"."post_id" < "posts"."id"
+Ref: "reactions"."id" < "posts"."id"
 
 Calculate disks:
   Seasonally:
@@ -87,8 +102,16 @@ Calculate disks:
       Disks_for_iops(HHD) =  70GB/s / 100MB/s ≈ 700 000 disks
       Disks_for_throutput(SSD) = 5 784 / 1000MB/s ≈ 5 disks
       Disks_for_iops(SSD) = 70GB/s / 1000MB/s ≈ 70 000 disks
-      Disks(HHD) = max(107, 57, 700 000) ≈ 700 000 disks by 200GB
-      Disks(SSD) = max(107, 5, 70 000) ≈ 70 000 disks by 1TB
+      Disks(HHD) = max(107, 57, 700 000) ≈ 3 700 disks by 30TB
+      Disks(SSD) = max(107, 5, 70 000) ≈ 3 700 disks by 30TB
+    Reactions:
+      Disks_for_capacity = 22KB/s * 84 600 * 91(June(30) + July(31) + August(30)) ≈ 1TB
+      Disks_for_throutput(HHD) = 462 / 100MB/s ≈ 4 disks
+      Disks_for_iops(HHD) = 22KB/s / 100MB/s ≈ 1 disk
+      Disks_for_throutput(SSD) = 462 / 1000MB/s ≈ 1 disk
+      Disks_for_iops(SSD) = 22KB / 1000MB/s ≈ 1 disk
+      Disks(HHD) = max(1, 4, 1) ≈ 4 disks by 250GB
+      Disks(SSD) = max(1, 1, 1) ≈ 1 disk by 1TB
   UnSeasonally:
     Posts:
       Disks_for_capacity = 578KB/s * 86 400 * 274(365 - 91) ≈ 14TB
@@ -120,5 +143,13 @@ Calculate disks:
       Disks_for_iops(HHD) =  16GB/s / 100MB ≈ 160 000 disks
       Disks_for_throutput(SSD) =  = 2 892 / 1000MB/s ≈ 2 disks
       Disks_for_iops(SSD) = 16GB/s / 1000MB ≈ 16 000 disks
-      Disks(HHD) = max(71, 28, 160 000) ≈ 160 000 disks by 500GB
-      Disks(SSD) = max(71, 2, 16 000) ≈ 16 000 disks by 1TB
+      Disks(HHD) = max(71, 28, 160 000) ≈ 1600 disks by 50TB
+      Disks(SSD) = max(71, 2, 16 000) ≈ 1600 disks by 40TB
+    Reactions:
+      Disks_for_capacity = 11KB/s * 86 400 * 274(365 - 91) ≈ 1TB
+      Disks_for_throutput(HHD) = 231 / 100MB/s ≈ 2 disks
+      Disks_for_iops(HHD) = 11KB/s / 100MB/s ≈ 1 disk
+      Disks_for_throutput(SSD) = 231 / 1000MB/s ≈ 1 disk
+      Disks_for_iops(SSD) = 11KB/s / 1000MB/s ≈ 1 disk
+      Disks(HHD) = max(1, 2, 1) ≈ 2 disks by 500GB
+      Disks(SSD) = max(1, 1, 1) ≈ 1 disk by 1TB
