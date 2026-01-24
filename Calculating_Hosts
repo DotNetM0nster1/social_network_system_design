@@ -1,0 +1,52 @@
+Calculate Hosts:
+Database: PostgreSQL(For metadata we use some blob database)
+Replication: async (We don't handle banking transactions, so small losses not critical for us)
+Replication type: master-slave (The basic structure is suitable for us)
+
+
+(In the previous lesson, I calculated the seasonal and non-seasonal load separately. Here I'm summing everything up and making adjustments to the disk sizes, as there were some minor exceptions made earlier)
+
+Posts(RF - 3):
+Disks(SSD): 14 disks by 2 TB
+Disks(HHD): 16 disks by 1 TB
+Shard(SSD): 14 / 2 = 7 shards 
+Shard(HHD): 16 / 2 = 8 shards 
+Hosts(SSD): 7 * 3 = 21 hosts by 2 disks by 2 TB
+Hosts(HDD): 8 * 3 = 24 hosts by 2 disks by 1 TB
+Sharding type: key-value (We have user_id, key-value is fine)
+
+Comments(RF-2):
+Disks(SSD): 14 disks by 1 TB
+Disks(HHD): 12 disks by 1 TB
+Shard(SSD): 14 / 2 = 7 shards
+Shard(HHD): 12 / 2 = 6 shards
+Hosts(SSD): 7 * 2 = 14 hosts by 1 disks by 1TB
+Hosts(HHD): 6 * 2 = 12 hosts by 1 disks by 1TB
+Sharding type: key-value (We have post_id, key-value is fine)
+
+Follows(RF-1):
+Disks(SSD): 1 disk by 1TB
+Disks(HHD): 1 disk by 1TB
+Shard(SSD): 1 / 1 = 1 shard
+Shard(HHD): 1 / 1 = 1 shard
+Hosts(SSD): 1 + 1 = 1 host by 1 dist by 1TB
+Hosts(HHD): 1 + 1 = 1 host by 1 dist by 1TB
+Sharding type: key-value (We have followed_user_id, key-value is fine)
+
+Media-Data(RF-2):
+Disks(SSD): 4300 disks by 40TB
+Disks(HHD): 4300 disks by 50TB
+Shard(SSD): 4300 / 2 = 2150 shards
+Shard(HHD): 4300 / 2 = 2150 shards
+Hosts(SSD): 2150 * 2 = 4300 hosts by 1 disks by 40
+Hosts(HHD): 2150 * 2 = 4300 hosts by 1 disks by 50
+Sharding type: key-value (We have post_id, key-value is fine)
+
+Reactions:
+Disks(SSD): 1 disk by 1TB
+Disks(HHD): 1 disk by 1TB
+Shard(SSD): 1 / 1 = 1 shard
+Shard(HHD): 1 / 1 = 1 shard
+Hosts(SSD): 1 + 1 = 1 host by 1 dist by 1TB
+Hosts(HHD): 1 + 1 = 1 host by 1 dist by 1TB
+Sharding type: key-value (We have post_id, key-value is fine)
