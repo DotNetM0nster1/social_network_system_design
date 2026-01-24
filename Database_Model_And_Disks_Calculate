@@ -54,7 +54,7 @@ Table posts
 {
   id uuid [primary key]
   text varchar
-  account_id uuid [not null]
+  user_id uuid [not null]
   status varchar
   created_at timestamp
   changed_at timestamp
@@ -66,7 +66,7 @@ Ref: users.id < follows.followed_user_id
 Ref: "posts"."id" < "comments"."id"
 Ref: "accounts"."id" < "users"."id"
 Ref: "comments"."id" < "accounts"."id"
-Ref: "posts"."account_id" < "accounts"."id"
+Ref: "posts"."user_id" < "users"."id"
 Ref: "media"."post_id" < "posts"."id"
 Ref: "reactions"."id" < "posts"."id"
 
